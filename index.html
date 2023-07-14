@@ -3,91 +3,151 @@
 <head>
     <title>Grafico</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        #chartContainer1, #chartContainer2 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50vh;
+        }
+        #myChart1, #myChart2 {
+            width: 50%;
+            height: 50%;
+        }
+    </style>
 </head>
 <body>
-    <canvas id="myChart"></canvas>
+    <div id="chartContainer1">
+        <canvas id="myChart1"></canvas>
+    </div>
+    <div id="chartContainer2">
+        <canvas id="myChart2"></canvas>
+    </div>
     <script>
 
-        const data = {
-            labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'], // Labels representando puntos en el tiempo
-            datasets: [{
-                label: 'Total Inactivos',
-                data: [8,7,6,5,4,3,3,3,5,6,6],
+        const labels = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11']; // Labels representando puntos en el tiempo
+        const datasets1 = [{
+            label: 'Total Inactivos',
+            data: [8,7,6,5,4,3,3,3,5,6,6],
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
+            borderWidth: 1,
+            fill: true
+        },
+        {
+            label: 'Total Desperdicio',
+            data: [0,1,1,1,1,1,2,0,0,0,0],
+            backgroundColor: 'rgb(54, 162, 235)',
+            borderColor: 'rgb(54, 162, 235)',
+            borderWidth: 1,
+            fill: true
+        },
+        {
+            label: 'Total Traslado',
+            data: [0,0,1,1,2,2,2,2,0,2,0],
+            backgroundColor: 'rgb(255, 206, 86)',
+            borderColor: 'rgb(255, 206, 86)',
+            borderWidth: 1,
+            fill: true
+        },
+        {
+            label: 'Total Cargado',
+            data: [0,0,0,1,1,1,1,0,2,0,0],
+            backgroundColor: 'rgb(75, 192, 192)',
+            borderColor: 'rgb(75, 192, 192)',
+            borderWidth: 1,
+            fill: true
+        },
+        {
+            label: 'Total Recargado',
+            data: [0,0,0,0,0,1,1,1,1,0,2],
+            backgroundColor: 'rgb(153, 102, 255)',
+            borderColor: 'rgb(153, 102, 255)',
+            borderWidth: 1,
+            fill: true
+        }];
+
+        const datasets2 = [
+            {
+                label: 'Material Cargado',
+                data: [0,0,0,23,46,69,92,92,130,0,0],
                 backgroundColor: 'rgb(255, 99, 132)',
                 borderColor: 'rgb(255, 99, 132)',
                 borderWidth: 1,
                 fill: true
             },
             {
-                label: 'Total Desperdicio',
-                data: [0,1,1,1,1,1,2,0,0,0,0],
+                label: 'Demanda Insatisfecha',
+                data: [130,130,130,117,84,61,38,38,0,0,0],
                 backgroundColor: 'rgb(54, 162, 235)',
                 borderColor: 'rgb(54, 162, 235)',
                 borderWidth: 1,
                 fill: true
-            },
-            {
-                label: 'Total Traslado',
-                data: [0,0,1,1,2,2,2,2,0,2,0],
-                backgroundColor: 'rgb(255, 206, 86)',
-                borderColor: 'rgb(255, 206, 86)',
-                borderWidth: 1,
-                fill: true
-            },
-            {
-                label: 'Total Cargado',
-                data: [0,0,0,1,1,1,1,0,2,0,0],
-                backgroundColor: 'rgb(75, 192, 192)',
-                borderColor: 'rgb(75, 192, 192)',
-                borderWidth: 1,
-                fill: true
-            },
-            {
-                label: 'Total Recargado',
-                data: [0,0,0,0,0,1,1,1,1,0,2],
-                backgroundColor: 'rgb(153, 102, 255)',
-                borderColor: 'rgb(153, 102, 255)',
-                borderWidth: 1,
-                fill: true
-            }]
-        };
-        var ctx = document.getElementById('myChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'line',
-            data,
-            options: {
-                responsive: true,
-                plugins: {
-                  title: {
-                    display: true,
-                    text: (ctx) => 'Chart.js Line Chart - stacked=' + ctx.chart.options.scales.y.stacked
-                  },
-                  tooltip: {
-                    mode: 'index'
-                  },
+            }
+        ];
+
+        function createChart(canvasId, datasets, title) {
+            var ctx = document.getElementById(canvasId).getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: datasets.map(dataset => ({
+                        ...dataset,
+                        data: []
+                    }))
                 },
-                interaction: {
-                  mode: 'nearest',
-                  axis: 'x',
-                  intersect: false
-                },
-                scales: {
-                  x: {
-                    title: {
-                      display: true,
-                      text: 'Horas'
+                options: {
+                    responsive: true,
+                    plugins: {
+                      title: {
+                        display: true,
+                        text: title
+                      },
+                      tooltip: {
+                        mode: 'index'
+                      },
+                    },
+                    interaction: {
+                      mode: 'nearest',
+                      axis: 'x',
+                      intersect: false
+                    },
+                    scales: {
+                      x: {
+                        title: {
+                          display: true,
+                          text: 'Horas'
+                        }
+                      },
+                      y: {
+                        stacked: true,
+                        title: {
+                          display: true,
+                          text: 'Cantidades'
+                        }
+                      }
                     }
-                  },
-                  y: {
-                    stacked: true,
-                    title: {
-                      display: true,
-                      text: 'Cantidades'
-                    }
-                  }
                 }
-              }
-        });
+            });
+
+            let dataIndex = 0;
+            function addData() {
+                if (dataIndex < labels.length) {
+                    myChart.data.labels.push(labels[dataIndex]);
+                    myChart.data.datasets.forEach(dataset => {
+                        dataset.data.push(datasets.find(d => d.label === dataset.label).data[dataIndex]);
+                    });
+                    dataIndex++;
+                    myChart.update();
+                    setTimeout(addData, 1000);  // Ajusta este valor para cambiar la velocidad de la animación
+                }
+            }
+            addData();
+        }
+
+        createChart('myChart1', datasets1, 'Total traslado');
+        createChart('myChart2', datasets2, 'Demanda insatisfecha');
     </script>
 </body>
 </html>
