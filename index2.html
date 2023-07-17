@@ -4,25 +4,28 @@
     <title>Grafico</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        #chartContainer3 {
+        #chartContainer1, #chartContainer2 {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 50vh;
         }
-        #myChart3 {
+        #myChart1, #myChart2 {
             width: 50%;
             height: 50%;
         }
     </style>
 </head>
 <body>
-    <div id="chartContainer3">
-        <canvas id="myChart3"></canvas>
+    <div id="chartContainer1">
+        <canvas id="myChart1"></canvas>
+    </div>
+    <div id="chartContainer2">
+        <canvas id="myChart2"></canvas>
     </div>
     <script>
         const labels = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11']; // Labels representando puntos en el tiempo
-        const datasets = [
+        const datasets1 = [
             {
                 label: 'Total Inactivos',
                 data: [8,7,6,5,4,3,3,3,5,6,6],
@@ -65,62 +68,86 @@
             }
         ];
 
-        var ctx = document.getElementById('myChart3').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: datasets.map(dataset => ({
-                    ...dataset,
-                    data: []
-                }))
+        const datasets2 = [
+            {
+                label: 'Material Cargado',
+                data: [0,0,0,23,46,69,92,92,130,0,0],
+                backgroundColor: 'rgb(255, 99, 132, 0.2)',
+                borderColor: 'rgb(255, 99, 132)',
+                borderWidth: 1,
+                fill: true
             },
-            options: {
-                responsive: true,
-                plugins: {
-                  title: {
-                    display: true,
-                    text: 'Progressive Line Chart'
-                  },
-                  tooltip: {
-                    mode: 'index'
-                  },
+            {
+                label: 'Demanda Insatisfecha',
+                data: [130,130,130,117,84,61,38,38,0,0,0],
+                backgroundColor: 'rgb(54, 162, 235, 0.2)',
+                borderColor: 'rgb(54, 162, 235)',
+                borderWidth: 1,
+                fill: true
+            }
+        ];
+
+        function createChart(canvasId, datasets, title) {
+            var ctx = document.getElementById(canvasId).getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: datasets.map(dataset => ({
+                        ...dataset,
+                        data: []
+                    }))
                 },
-                interaction: {
-                  mode: 'nearest',
-                  axis: 'x',
-                  intersect: false
-                },
-                scales: {
-                  x: {
-                    title: {
-                      display: true,
-                      text: 'Horas'
+                options: {
+                    responsive: true,
+                    plugins: {
+                      title: {
+                        display: true,
+                        text: title
+                      },
+                      tooltip: {
+                        mode: 'index'
+                      },
+                    },
+                    interaction: {
+                      mode: 'nearest',
+                      axis: 'x',
+                      intersect: false
+                    },
+                    scales: {
+                      x: {
+                        title: {
+                          display: true,
+                          text: 'Horas'
+                        }
+                      },
+                      y: {
+                        title: {
+                          display: true,
+                          text: 'Cantidades'
+                        }
+                      }
                     }
-                  },
-                  y: {
-                    title: {
-                      display: true,
-                      text: 'Cantidades'
-                    }
-                  }
+                }
+            });
+
+            let dataIndex = 0;
+            function addData() {
+                if (dataIndex < labels.length) {
+                    myChart.data.labels.push(labels[dataIndex]);
+                    myChart.data.datasets.forEach(dataset => {
+                        dataset.data.push(datasets.find(d => d.label === dataset.label).data[dataIndex]);
+                    });
+                    dataIndex++;
+                    myChart.update();
+                    setTimeout(addData, 1000);  // Ajusta este valor para cambiar la velocidad de la animación
                 }
             }
-        });
-
-        let dataIndex = 0;
-        function addData() {
-            if (dataIndex < labels.length) {
-                myChart.data.labels.push(labels[dataIndex]);
-                myChart.data.datasets.forEach(dataset => {
-                    dataset.data.push(datasets.find(d => d.label === dataset.label).data[dataIndex]);
-                });
-                dataIndex++;
-                myChart.update();
-                setTimeout(addData, 1000);  // Ajusta este valor para cambiar la velocidad de la animación
-            }
+            addData();
         }
-        addData();
+
+        createChart('myChart1', datasets1, 'Progressive Line Chart 1');
+        createChart('myChart2', datasets2, 'Progressive Line Chart 2');
     </script>
 </body>
 </html>
