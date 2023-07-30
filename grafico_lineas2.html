@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Grafico</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .card {
+            margin-left: 23vw !important;
+        }
+
+        #chartContainer1,
+        #chartContainer2 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50vh;
+            border-radius: 24px;
+        }
+
+        #myChart1,
+        #myChart2 {
+            width: 50%;
+            height: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card mt-5 ms-5 shadow p-3 mb-5 bg-body-tertiary rounded" style="width: 50rem;">
+        <div id="chartContainer2">
+            <canvas id="myChart2"></canvas>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Demanda Insatisfecha</h5>
+            <button class="btn btn-primary" onclick="restartAnimation()">Reiniciar</button>
+        </div>
+    </div>
+
+    <div class="card mt-5 ms-5 mb-4 shadow p-3 mb-5 bg-body-tertiary rounded" style="width: 50rem;">
+        <div id="chartContainer1">
+            <canvas id="myChart1"></canvas>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Total Traslado</h5>
+            <button class="btn btn-primary" onclick="restartAnimation()">Reiniciar</button>
+        </div>
+    </div>
+
+    <script>
+        const data = {
+            hora: [
+                "7:00",
+                "8:00",
+                "9:00",
+                "10:00",
+                "11:00",
+                "12:00",
+                "13:00",
+                "14:00",
+                "15:00",
+                "16:00",
+                "17:00",
+                "18:00",
+            ],
+            total_inactivos: [8, 7, 6, 5, 4, 3, 2, 3, 5, 6, 6, 8],
+            total_traslado: [0, 0, 1, 1, 2, 2, 2, 2, 0, 2, 0, 0],
+            total_desperdicio: [0, 1, 1, 1, 1, 1, 2, 2, 0, 0, 0, 0],
+            total_cargando: [0, 0, 0, 1, 1, 1, 1, 0, 2, 0, 0, 0],
+            total_recargando: [0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 2, 0],
+            material_cargado: [0, 0, 0, 23, 46, 69, 92, 92, 130, 130, 130, 130],
+            demanda_insatisfecha: [130, 130, 130, 107, 84, 61, 38, 38, 0, 0, 0, 0],
+        };
+
+        const labels = data.hora;
+        const datasets1 = [
+            {
+                label: 'Total Traslado',
+                data: data.total_traslado,
+                backgroundColor: 'rgb(135, 206, 235)',
+                borderColor: 'rgb(0, 0,255)',
+                borderWidth: 1,
+                stepped: true,
+                fill: true
+            },
+            {
+                label: 'Total Recargando',
+                data: data.total_recargando,
+                backgroundColor: 'rgb(221, 160, 221)',
+                borderColor: 'rgb(255, 0, 255)',
+                borderWidth: 1,
+                stepped: true,
+                fill: true
+            },
+            {
+                label: 'Total Cargando',
+                data: data.total_cargando,
+                backgroundColor: 'rgb(144, 238, 144)',
+                borderColor: 'rgb(75, 192, 192)',
+                borderWidth: 1,
+                stepped: true,
+                fill: true
+            },
+            {
+                label: 'Total Desperdicio',
+                data: data.total_desperdicio,
+                backgroundColor: 'rgb(240, 128, 128)',
+                borderColor: 'rgb(255, 0, 0)',
+                borderWidth: 1,
+                stepped: true,
+                fill: true
+            },
+            {
+                label: 'Total Inactivos',
+                data: data.total_inactivos,
+                backgroundColor: 'rgb(211, 211, 211)',
+                borderColor: 'rgb(192, 192, 192)',
+                borderWidth: 1,
+                stepped: true,
+                fill: true
+            }
+        ];
+
+        const datasets2 = [
+            {
+                label: 'Material Cargado[TON]',
+                data: data.material_cargado,
+                backgroundColor: 'rgb(144, 238, 144)',
+                borderColor: 'rgb(75, 192, 192)',
+                borderWidth: 1,
+                stepped: true,
+                fill: true
+            },
+            {
+                label: 'Demanda Insatisfecha[TON]',
+                data: data.demanda_insatisfecha,
+                backgroundColor: 'rgb(211, 211, 211)',
+                borderColor: 'rgb(192, 192, 192)',
+                borderWidth: 1,
+                stepped: true,
+                fill: true
+            }
+        ];
+
+        const totalDuration = 10000;
+        const delayBetweenPoints = totalDuration / data.hora.length;
+        const previousY = (ctx) =>
+            ctx.index === 0
+                ? ctx.chart.scales.y.getPixelForValue(100)
+                : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
+        const animation = {
+            x: {
+                type: 'number',
+                easing: 'linear',
+                duration: delayBetweenPoints,
+                from: NaN, // the point is initially skipped
+                delay(ctx) {
+                    if (ctx.type !== 'data' || ctx.xStarted) {
+                        return 0;
+                    }
+                    ctx.xStarted = true;
+                    return ctx.index * delayBetweenPoints;
+                }
+            },
+            y: {
+                type: 'number',
+                easing: 'linear',
+                duration: delayBetweenPoints,
+                from: previousY,
+                delay(ctx) {
+                    if (ctx.type !== 'data' || ctx.yStarted) {
+                        return 0;
+                    }
+                    ctx.yStarted = true;
+                    return ctx.index * delayBetweenPoints;
+                }
+            }
+        };
+
+        var charts = {};
+
+        function createChart(canvasId, datasets, labels, title) {
+            var ctx = document.getElementById(canvasId).getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    animation: animation,
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: title
+                        },
+                        tooltip: {
+                            mode: 'index'
+                        },
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Horas'
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Cantidades'
+                            }
+                        }
+                    }
+                }
+            });
+            return myChart;
+        }
+
+        function createCharts() {
+            charts.myChart1 = createChart('myChart1', datasets1, labels, 'Total traslado');
+            charts.myChart2 = createChart('myChart2', datasets2, labels, 'Demanda insatisfecha');
+        }
+
+        function restartAnimation() {
+            destroyCharts();
+            createCharts();
+        }
+
+        function destroyCharts() {
+            for (let chart in charts) {
+                charts[chart].destroy();
+            }
+            charts = {};
+        }
+
+        function createCharts() {
+            charts.myChart1 = createChart('myChart1', datasets1, labels, 'Total traslado');
+            charts.myChart2 = createChart('myChart2', datasets2, labels, 'Demanda insatisfecha');
+        }
+        createCharts();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>
