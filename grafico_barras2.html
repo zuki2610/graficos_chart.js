@@ -48,7 +48,62 @@
             <button class="btn btn-primary" onclick="restartAnimation()">Reiniciar</button>
         </div>
     </div>
-
+<div>
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+          <h5 class="card-title">Demanda del dia (Fija)</h5>
+          <h6 class="card-subtitle mb-2 text-body-secondary">TON <span ="id:demanda-dia"></span> </h6>
+        </div>
+      </div>
+      <div class="card" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">Descarga efectiva</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">TON <span ="id:descarga"></span></h6>
+      </div>
+    </div>
+    <div class="card" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">Ciclos camion</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">TON <span ="id:ciclos-camion"></span></h6>
+      </div>
+    </div>
+    <div class="card" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">Ciclos totales</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">TON <span ="id:ciclos-totales"></span></h6>
+      </div>
+    </div>
+    <div class="card" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">Total recarga</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">H/Camion <span ="id:total-recarga"></span></h6>
+      </div>
+    </div>
+      <div class="card" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">Total desperdicio</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">H/Camion <span ="id:total-desperdicio"></span> </h6>
+      </div>
+    </div>
+    <div class="card" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">Descarga efectiva</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">H/Camion <span ="id:descarga-efectiva"></span></h6>
+      </div>
+    </div>
+    <div class="card" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">Total carga</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">H/Camion <span ="id:total-carga"></span></h6>
+      </div>
+    </div>
+    <div class="card" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">Total traslado</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary"><span ="id:total-traslado"></span>H/Camion</h6>
+      </div>
+    </div>
+</div>
     <script>
         fetch('https://enaex-simulations.herokuapp.com/animation/best/1')
             .then(response => response.json())
