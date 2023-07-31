@@ -48,13 +48,79 @@
             <button class="btn btn-primary" onclick="restartAnimation()">Reiniciar</button>
         </div>
     </div>
+<div>
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+          <h5 class="card-title">Demanda del dia (Fija)</h5>
+          <h6 class="card-subtitle mb-2 text-body-secondary">TON <span id="demanda-dia"></span> </h6>
+        </div>
+      </div>
+      <div class="card" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">Descarga efectiva</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">TON <span id="descarga"></span></h6>
+      </div>
+    </div>
+    <div class="card" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">Ciclos camion</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">TON <span id="ciclos-camion"></span></h6>
+      </div>
+    </div>
+    <div class="card" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">Ciclos totales</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">TON <span id="ciclos-totales"></span></h6>
+      </div>
+    </div>
+    <div class="card" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">Total recarga</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">H/Camion <span id="total-recarga"></span></h6>
+      </div>
+    </div>
+      <div class="card" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">Total desperdicio</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">H/Camion <span id="total-desperdicio"></span> </h6>
+      </div>
+    </div>
 
+    <div class="card" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">Total carga</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">H/Camion <span id="total-carga"></span></h6>
+      </div>
+    </div>
+    <div class="card" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">Total traslado</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary"><span id="total-traslado"></span>H/Camion</h6>
+      </div>
+    </div>
+</div>
     <script>
-
-
         fetch('https://enaex-simulations.herokuapp.com/animation/best/1')
             .then(response => response.json())
             .then(data => {
+                const demanda = data.demanda;
+                const descargaEfectiva = data.descarga_efectiva;
+                const ciclosCamion = 'pendiente';
+                const ciclosTotales = data.ciclos_totales;
+                const totalRecarga = data.camiones_recargando.reduce((acumulador, valor) => acumulador + valor, 0);
+                const totalDesperdicio = data.camiones_desperdicio.reduce((acumulador, valor) => acumulador + valor, 0);
+                const totalCarga = data.camiones_cargando.reduce((acumulador, valor) => acumulador + valor, 0);
+                const totalTraslado = data.camiones_traslado.reduce((acumulador, valor) => acumulador + valor, 0);
+
+                document.querySelector('#ciclos-totales').textContent = ciclosTotales;
+                document.querySelector('#total-recarga').textContent = totalRecarga;
+                document.querySelector('#total-desperdicio').textContent = totalDesperdicio;
+                document.querySelector('#total-carga').textContent = totalCarga;
+                document.querySelector('#total-traslado').textContent = totalTraslado;
+                document.querySelector('#demanda-dia').textContent = demanda;
+                document.querySelector('#descarga').textContent = descargaEfectiva;
+                document.querySelector('#ciclos-camion').textContent = ciclosCamion;
+
                 const labels = data.hora;
                 const datasets1 = [
                     {
